@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دمای روزانه سردخانه تیرم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazir', sans-serif;
+            background: rgba(0, 0, 0, 0.7); /* رنگ پس‌زمینه مات و تیره */
+            backdrop-filter: blur(5px); /* افکت بلور */
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .header a {
+            margin: 0 10px;
+        }
+        .header img {
+            width: 30px;
+            height: 30px;
+            filter: grayscale(100%); /* سیاه و سفید کردن لوگوها */
+        }
+        .banner {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Titillium Web', sans-serif;
+            font-size: 24px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .salan {
+            background-color: #fff; /* رنگ پس‌زمینه ستون‌ها */
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc; /* خط اطراف ستون‌ها */
+        }
+        .salan-header {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        input[type="text"], select, input[type="time"] {
+            width: calc(100% - 10px);
+            padding: 5px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            text-align: center; /* وسط چین کردن نوشته‌ها */
+            margin-bottom: 5px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 48%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .salan:focus-within {
+            border: 2px solid #4CAF50; /* خط دور نوار ستون */
+        }
+        .report {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+        }
+        .footer {
+            background-color: black;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .designed-by {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            color: black; /* تغییر رنگ فونت به مشکی */
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+        }
+        #resultCanvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="https://instagram.com/saeidparvaneh" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" alt="Instagram">
+        </a>
+        <a href="https://t.me/saeidspm" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
+        </a>
+        <a href="https://x.com/saeidspm" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Twitter-logo.svg" alt="X">
+        </a>
+        <a href="mailto:saeiddpm@aol.com" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Logo.png" alt="Email">
+        </a>
+    </div>
+    <div class="banner">دمای روزانه سردخانه تیرم</div>
+    <div class="container">
+        <form id="temperatureForm">
+            <div class="salan">
+                <div class="salan-header">سالن 1</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check1" checked onchange="toggleInputs(1)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp1" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp1" required>
+                <label>یخ:</label>
+                <select name="ice1" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time1" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 2</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check2" checked onchange="toggleInputs(2)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp2" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp2" required>
+                <label>یخ:</label>
+                <select name="ice2" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time2" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 3</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check3" checked onchange="toggleInputs(3)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp3" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp3" required>
+                <label>یخ:</label>
+                <select name="ice3" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time3" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 4</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check4" checked onchange="toggleInputs(4)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp4" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp4" required>
+                <label>یخ:</label>
+                <select name="ice4" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time4" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 5</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check5" checked onchange="toggleInputs(5)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp5" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp5" required>
+                <label>یخ:</label>
+                <select name="ice5" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time5" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 6</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check6" checked onchange="toggleInputs(6)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp6" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp6" required>
+                <label>یخ:</label>
+                <select name="ice6" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time6" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 7</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check7" checked onchange="toggleInputs(7)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp7" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp7" required>
+                <label>یخ:</label>
+                <select name="ice7" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time7" required>
+            </div>
+            <div class="salan">
+                <div class="salan-header">سالن 8</div>
+                <div class="checkbox-label">
+                    <input type="checkbox" name="check8" checked onchange="toggleInputs(8)"> ثبت دما
+                </div>
+                <label>دمای میوه جلو:</label>
+                <input type="text" name="frontTemp8" required>
+                <label>دمای میوه عقب:</label>
+                <input type="text" name="backTemp8" required>
+                <label>یخ:</label>
+                <select name="ice8" required>
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
+                <label>ساعت:</label>
+                <input type="time" name="time8" required>
+            </div>
+            <div class="button-container">
+                <button type="submit">ثبت دما</button>
+                <button type="button" onclick="saveReport()">ذخیره گزارش</button>
+            </div>
+        </form>
+        <div id="result"></div>
+        <canvas id="resultCanvas"></canvas>
+        <div class="footer">Designed by SAEID PARVANEH</div>
+        <div class="designed-by">این نرم افزار توسط سعیدپروانه طراحی شده است</div>
+    </div>
+    <script>
+        function toggleInputs(salanNumber) {
+            const isChecked = document.querySelector(`input[name="check${salanNumber}"]`).checked;
+            const inputs = document.querySelectorAll(`input[name^="frontTemp${salanNumber}"], input[name^="backTemp${salanNumber}"], select[name^="ice${salanNumber}"], input[name^="time${salanNumber}"]`);
+            inputs.forEach(input => {
+                input.disabled = !isChecked; // غیرفعال کردن ورودی‌ها
+                if (!isChecked) input.value = ''; // پاک کردن مقدار ورودی‌ها
+            });
+        }
+
+        document.getElementById('temperatureForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const today = new Date();
+            const persianDate = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full' }).format(today);
+            let result = `گزارش دما ${persianDate}:\n`;
+            for (let i = 1; i <= 8; i++) {
+                if (document.querySelector(`input[name="check${i}"]`).checked) {
+                    result += `سالن ${i}:\n`;
+                    result += `دمای میوه جلو: ${this[`frontTemp${i}`].value}\n`;
+                    result += `دمای میوه عقب: ${this[`backTemp${i}`].value}\n`;
+                    result += `یخ: ${this[`ice${i}`].value}\n`;
+                    result += `ساعت: ${this[`time${i}`].value}\n`;
+                    result += '=====================\n';
+                } else {
+                    result += `سالن ${i}: ثبت نشده\n`;
+                    result += '=====================\n';
+                }
+            }
+            result += '\nDesigned by SAEID PARVANEH';
+            result += '\nاین نرم افزار توسط سعیدپروانه طراحی شده است';
+            document.getElementById('result').innerText = result;
+        });
+
+        function saveReport() {
+            const resultText = document.getElementById('result').innerText;
+            const canvas = document.getElementById('resultCanvas');
+            const context = canvas.getContext('2d');
+            const lines = resultText.split('\n');
+
+            canvas.width = 1000;
+            canvas.height = 1200;
+
+            context.fillStyle = '#fff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            context.fillStyle = '#000';
+            context.font = '18px Vazir';
+
+            // طراحی قالب خط کشی شده برای هر سالن به صورت دو ستون چهار تایی
+            const boxWidth = (canvas.width - 30) / 2;
+            const boxHeight = 120;
+            let yOffset = 80; // فضای برای تاریخ
+            let xOffset = 10;
+
+            // اضافه کردن تاریخ شمسی در بالای گزارش
+            const today = new Date();
+            const persianDate = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full' }).format(today);
+            context.fillText(`تاریخ: ${persianDate}`, 10, 40);
+
+            for (let i = 1; i <= 8; i++) {
+                context.strokeStyle = '#000';
+                context.lineWidth = 2;
+                context.strokeRect(xOffset, yOffset, boxWidth, boxHeight);
+
+                context.lineWidth = 1;
+                context.beginPath();
+                context.moveTo(xOffset, yOffset + 30);
+                context.lineTo(xOffset + boxWidth, yOffset + 30);
+                context.moveTo(xOffset, yOffset + 60);
+                context.lineTo(xOffset + boxWidth, yOffset + 60);
+                context.moveTo(xOffset, yOffset + 90);
+                context.lineTo(xOffset + boxWidth, yOffset + 90);
+                context.stroke();
+
+                context.fillText(`سالن ${i}:`, xOffset + 10, yOffset + 20);
+                context.fillText(`دمای میوه جلو: ${document.querySelector(`input[name="frontTemp${i}"]`).value}`, xOffset + 10, yOffset + 50);
+                context.fillText(`دمای میوه عقب: ${document.querySelector(`input[name="backTemp${i}"]`).value}`, xOffset + 10, yOffset + 80);
+                context.fillText(`یخ: ${document.querySelector(`select[name="ice${i}"]`).value}`, xOffset + 10, yOffset + 110);
+                context.fillText(`ساعت: ${document.querySelector(`input[name="time${i}"]`).value}`, xOffset + 200, yOffset + 110);
+                
+                if (i % 2 === 0) {
+                    yOffset += boxHeight + 10;
+                    xOffset = 10;
+                } else {
+                    xOffset += boxWidth + 10;
+                }
+            }
+
+            // اضافه کردن نام طراح در پایین گزارش
+            context.fillText('Designed by SAEID PARVANEH', 10, canvas.height - 60);
+            context.fillText('این نرم افزار توسط سعیدپروانه طراحی شده است', 10, canvas.height - 40);
+
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'temperature_report.png';
+            link.click();
+        }
+    </script>
+</body>
+</html>
+``` ▋
