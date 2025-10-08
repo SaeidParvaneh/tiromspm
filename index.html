@@ -14,6 +14,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@700&display=swap" rel="stylesheet">
     
     <style>
+        /* تعریف رنگ‌های کم‌رنگ برای هر کارت در داشبورد */
+        :root {
+            --hall-color-1: #e0f2f1; /* Teal 50 */
+            --hall-color-2: #e3f2fd; /* Blue 50 */
+            --hall-color-3: #f3e5f5; /* Purple 50 */
+            --hall-color-4: #fff3e0; /* Orange 50 */
+            --hall-color-5: #fbe9e7; /* Deep Orange 50 */
+            --hall-color-6: #e8f5e9; /* Green 50 */
+            --hall-color-7: #fafafa; /* Gray 50 (Very light) */
+            --hall-color-8: #f9fbe7; /* Lime 50 */
+        }
+
         /* استایل‌های اصلی برنامه شما */
         body {
             font-family: 'Vazir', Tahoma, sans-serif;
@@ -57,7 +69,7 @@
         .form-group {
             margin-bottom: 15px;
             padding: 15px;
-            border: 2px solid #ddd;
+            border: 1px solid #ddd; /* خط نازک دور کارت در فرم */
             border-radius: 8px;
             background-color: #f9f9f9;
             transition: all 0.3s;
@@ -73,7 +85,10 @@
             font-weight: bold;
             color: #333;
         }
-        .form-group input[type="number"], .form-group input[type="time"], .form-group select {
+        .form-group input[type="number"], 
+        .form-group input[type="time"], 
+        .form-group select, 
+        .form-group input[type="text"] {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -101,19 +116,32 @@
 
         /* --- استایل‌های داشبورد گرافیکی جدید --- */
         .tilted-card {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
             transform: rotate(0.5deg); 
-            background-color: #ffffff; 
+            border: 1px solid #ccc; /* خط نازک دور کارت در داشبورد */
+        }
+        .tilted-card:hover {
+            transform: rotate(0deg) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         .content-untilt {
             transform: rotate(-0.5deg);
         }
+        /* رنگ‌بندی کارت‌های داشبورد */
+        #hallCard1 { background-color: var(--hall-color-1); }
+        #hallCard2 { background-color: var(--hall-color-2); }
+        #hallCard3 { background-color: var(--hall-color-3); }
+        #hallCard4 { background-color: var(--hall-color-4); }
+        #hallCard5 { background-color: var(--hall-color-5); }
+        #hallCard6 { background-color: var(--hall-color-6); }
+        #hallCard7 { background-color: var(--hall-color-7); }
+        #hallCard8 { background-color: var(--hall-color-8); }
+
         #dashboardSection {
-            /* مطمئن می‌شویم که این بخش در ابتدا مخفی است */
             display: none; 
             padding: 20px;
-            background-color: #eef2f5; /* پس زمینه روشن برای بخش داشبورد */
+            background-color: #eef2f5; 
             border-radius: 12px;
         }
     </style>
@@ -236,8 +264,8 @@
                 inputs.forEach(input => {
                     if (input.id !== `hallActive${hallId}`) {
                         input.disabled = false;
-                        // اگر فعال شد، فیلدهای ضروری را دوباره الزامی (required) می کنیم
-                        if (input.type === 'number' || input.type === 'time') {
+                        // الزامی کردن فقط فیلدهای دمای میوه و ساعت
+                        if (input.name.startsWith('frontTemp') || input.name.startsWith('backTemp') || input.name.startsWith('time')) {
                             input.required = true;
                         }
                     }
@@ -247,11 +275,11 @@
                 inputs.forEach(input => {
                     if (input.id !== `hallActive${hallId}`) {
                         input.disabled = true;
-                        input.required = false; // الزامی بودن را برای فیلدهای غیرفعال حذف می کنیم
-                        input.value = ''; // مقادیر را پاک می کنیم
+                        input.required = false; 
+                        input.value = ''; // پاک کردن مقادیر
                     }
                 });
-                // یخ را به "ندارد" تنظیم می کنیم تا در گزارش غیرفعال بودن را نشان دهد
+                // یخ را به "ندارد" تنظیم می کنیم
                 document.getElementById(`ice${hallId}`).value = 'ندارد';
             }
         }
@@ -273,20 +301,32 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- دمای مغز میوه (جلو) -->
+                        <!-- بخش دمای میوه (الزامی) -->
+                        <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label for="frontTemp${i}">دمای میوه (جلو):</label>
-                                <input type="number" step="0.1" id="frontTemp${i}" name="frontTemp${i}" required placeholder="مثال: 2.5">
+                                <input type="number" step="0.01" id="frontTemp${i}" name="frontTemp${i}" required placeholder="مثال: 3.44">
                             </div>
-                            
-                            <!-- دمای مغز میوه (عقب) -->
                             <div>
                                 <label for="backTemp${i}">دمای میوه (عقب):</label>
-                                <input type="number" step="0.1" id="backTemp${i}" name="backTemp${i}" required placeholder="مثال: 3.1">
+                                <input type="number" step="0.01" id="backTemp${i}" name="backTemp${i}" required placeholder="مثال: 2.90">
                             </div>
+                        </div>
 
-                            <!-- وضعیت یخ -->
+                        <!-- بخش دمای سطل آب (اختیاری) -->
+                         <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="frontWaterTemp${i}">دمای سطل آب (جلو):</label>
+                                <input type="number" step="0.01" id="frontWaterTemp${i}" name="frontWaterTemp${i}" placeholder="مثال: 1.50">
+                            </div>
+                            <div>
+                                <label for="backWaterTemp${i}">دمای سطل آب (عقب):</label>
+                                <input type="number" step="0.01" id="backWaterTemp${i}" name="backWaterTemp${i}" placeholder="مثال: 1.80">
+                            </div>
+                        </div>
+                        
+                        <!-- بخش یخ و ساعت (یخ الزامی، ساعت الزامی) -->
+                        <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label for="ice${i}">وضعیت یخ:</label>
                                 <select id="ice${i}" name="ice${i}" required>
@@ -295,7 +335,6 @@
                                 </select>
                             </div>
 
-                            <!-- ساعت ثبت گزارش (با دکمه) -->
                             <div class="relative">
                                 <label for="time${i}">ساعت ثبت گزارش:</label>
                                 <div class="flex space-x-2 space-x-reverse">
@@ -308,11 +347,14 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- فیلد یک‌تکه توضیحات (اختیاری) -->
+                        <div>
+                            <input type="text" id="notes${i}" name="notes${i}" placeholder="توضیحات">
+                        </div>
                     </div>
                 `;
                 formContainer.insertAdjacentHTML('beforeend', html);
-                
-                // toggleHall(i); // این خط برای تنظیمات اولیه است، اما با توجه به اینکه پیش‌فرض فعال است، نیازی نیست
             }
         });
 
@@ -323,7 +365,7 @@
             const tempFront = parseFloat(data.tempFront);
             const tempBack = parseFloat(data.tempBack);
             
-            // منطق تعیین وضعیت: اگر دما بیشتر از 3.5 یا یخ نباشد، وضعیت بحرانی است
+            // منطق تعیین وضعیت: اگر دما بیشتر از 3.5 باشد، وضعیت بحرانی است
             const isCriticalTemp = isActive && (tempFront > 3.5 || tempBack > 3.5);
             const isCriticalIce = isActive && data.iceStatus === 'ندارد';
             
@@ -357,14 +399,21 @@
             }
             
             // تعیین متن نمایش داده شده
-            const displayTempFront = isActive ? `${data.tempFront} °C` : '--';
-            const displayTempBack = isActive ? `${data.tempBack} °C` : '--';
+            const displayTempFront = isActive && data.tempFront !== '--' ? `${data.tempFront} °C` : '--';
+            const displayTempBack = isActive && data.tempBack !== '--' ? `${data.tempBack} °C` : '--';
             const displayIceStatus = isActive ? data.iceStatus : '--';
             const displayTime = isActive ? data.time : '--:--';
 
+            // نمایش دمای سطل آب فقط در صورت وجود
+            const waterTempFront = data.waterTempFront && data.waterTempFront !== '--' ? `${data.waterTempFront} °C` : '--';
+            const waterTempBack = data.waterTempBack && data.waterTempBack !== '--' ? `${data.waterTempBack} °C` : '--';
+            
+            // نمایش توضیحات فقط در صورت وجود
+            const notesContent = data.notes ? `<p class="text-xs text-gray-600 border-t pt-2 mt-2">${data.notes}</p>` : '';
+
 
             return `
-                <div class="tilted-card rounded-xl border-l-4 ${statusColor} p-4 space-y-3 ${isActive ? '' : 'opacity-70'}">
+                <div class="tilted-card rounded-xl border-l-4 ${statusColor} p-4 space-y-3 ${isActive ? '' : 'opacity-70'}" id="hallCard${data.id}">
                     <div class="content-untilt">
                         
                         <!-- شماره سالن و نوار وضعیت -->
@@ -396,6 +445,26 @@
                             </div>
                         </div>
 
+                        <!-- دمای سطل آب (جدید) -->
+                        <div class="space-y-2 pt-2 border-t border-dashed mt-2">
+                            <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-dashed pb-1">💧 دمای سطل آب</h3>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-700">جلو سطل:</span>
+                                <span class="text-md font-mono font-semibold px-2 py-0.5 rounded-lg bg-indigo-100 text-indigo-700">
+                                    ${waterTempFront}
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-700">عقب سطل:</span>
+                                <span class="text-md font-mono font-semibold px-2 py-0.5 rounded-lg bg-indigo-100 text-indigo-700">
+                                    ${waterTempBack}
+                                </span>
+                            </div>
+                        </div>
+                        
+
                         <!-- وضعیت یخ و زمان ثبت -->
                         <div class="flex justify-between items-center pt-3 border-t border-gray-100 mt-3">
                             
@@ -414,6 +483,9 @@
                             </div>
 
                         </div>
+                        
+                        <!-- توضیحات (جدید) -->
+                        ${notesContent}
 
                     </div>
                 </div>
@@ -436,6 +508,11 @@
                     isActive: isActive,
                     tempFront: null,
                     tempBack: null,
+                    // فیلدهای اختیاری
+                    waterTempFront: document.getElementById(`frontWaterTemp${i}`).value || '--',
+                    waterTempBack: document.getElementById(`backWaterTemp${i}`).value || '--',
+                    notes: document.getElementById(`notes${i}`).value || null,
+                    
                     iceStatus: iceSelect.value,
                     time: timeInput.value || '--:--'
                 };
@@ -444,23 +521,32 @@
                     const frontTempInput = document.getElementById(`frontTemp${i}`);
                     const backTempInput = document.getElementById(`backTemp${i}`);
 
-                    // بررسی اعتبار سنجی ساده برای سالن‌های فعال
+                    // بررسی اعتبار سنجی ساده برای فیلدهای *الزامی* سالن‌های فعال
                     if (!frontTempInput.value || !backTempInput.value || !data.time) {
                         allValid = false;
-                        alert(`لطفاً تمام فیلدهای سالن فعال (شماره ${i}) را پر کنید.`);
+                        alert(`لطفاً تمام فیلدهای دمای میوه و ساعت سالن فعال (شماره ${i}) را پر کنید.`);
                         break;
                     }
                     
-                    data.tempFront = parseFloat(frontTempInput.value).toFixed(2); // تغییر به دو رقم اعشار برای دقت بیشتر
+                    // تنظیم دما با دو رقم اعشار
+                    data.tempFront = parseFloat(frontTempInput.value).toFixed(2); 
                     data.tempBack = parseFloat(backTempInput.value).toFixed(2);
+
+                    // تنظیم دمای آب با دو رقم اعشار (اگر وارد شده باشد)
+                    if (data.waterTempFront !== '--') data.waterTempFront = parseFloat(data.waterTempFront).toFixed(2);
+                    if (data.waterTempBack !== '--') data.waterTempBack = parseFloat(data.waterTempBack).toFixed(2);
+                    
                     activeCount++;
 
                 } else {
-                    // برای سالن‌های غیرفعال، مقدارها را خالی می‌گذاریم
+                    // برای سالن‌های غیرفعال، مقادیر را خالی می‌گذاریم
                     data.tempFront = '--';
                     data.tempBack = '--';
                     data.iceStatus = '--'; 
                     data.time = '--:--';
+                    data.waterTempFront = '--';
+                    data.waterTempBack = '--';
+                    data.notes = null;
                 }
 
                 formData.push(data);
