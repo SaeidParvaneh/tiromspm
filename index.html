@@ -305,11 +305,11 @@
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label for="frontTemp${i}">دمای میوه (جلو):</label>
-                                <input type="number" step="0.01" id="frontTemp${i}" name="frontTemp${i}" required placeholder="مثال: 3.44">
+                                <input type="text" id="frontTemp${i}" name="frontTemp${i}" required placeholder="مثال: 3.44 یا خاموش">
                             </div>
                             <div>
                                 <label for="backTemp${i}">دمای میوه (عقب):</label>
-                                <input type="number" step="0.01" id="backTemp${i}" name="backTemp${i}" required placeholder="مثال: 2.90">
+                                <input type="text" id="backTemp${i}" name="backTemp${i}" required placeholder="مثال: -0.1 یا سنسور قطع">
                             </div>
                         </div>
 
@@ -317,11 +317,11 @@
                          <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label for="frontWaterTemp${i}">دمای سطل آب (جلو):</label>
-                                <input type="number" step="0.01" id="frontWaterTemp${i}" name="frontWaterTemp${i}" placeholder="مثال: 1.50">
+                                <input type="text" id="frontWaterTemp${i}" name="frontWaterTemp${i}" placeholder="مثال: 1.50">
                             </div>
                             <div>
                                 <label for="backWaterTemp${i}">دمای سطل آب (عقب):</label>
-                                <input type="number" step="0.01" id="backWaterTemp${i}" name="backWaterTemp${i}" placeholder="مثال: 1.80">
+                                <input type="text" id="backWaterTemp${i}" name="backWaterTemp${i}" placeholder="مثال: 1.80">
                             </div>
                         </div>
                         
@@ -361,7 +361,24 @@
 
         // --- ۱. تولید HTML کارت (منطق گرافیکی جدید) ---
         function createHallCard(data) {
+            
+            // تابع کمکی برای فرمت نمایش دما
+            // اگر عدد باشد "°C" اضافه می‌کند، اگر متن باشد خود متن را برمی‌گرداند
+            const formatTemp = (val) => {
+                if (val === '--' || val === null) return '--';
+                // بررسی می‌کنیم که آیا مقدار ورودی یک عدد (یا رشته عددی) است یا نه
+                // isNaN(parseFloat("خاموش")) -> true
+                // isNaN(parseFloat("-0.1")) -> false
+                // isNaN(parseFloat("0.55")) -> false
+                if (!isNaN(parseFloat(val))) {
+                    return `${val} °C`; // اگر عدد بود (مثل: -0.1 °C)
+                }
+                return val; // اگر متن بود (مثلا "خاموش")
+            };
+
             const isActive = data.isActive;
+            // parseFloat برای بررسی وضعیت بحرانی استفاده می‌شود
+            // parseFloat("خاموش") برابر با NaN می‌شود و NaN > 3.5 همیشه false است
             const tempFront = parseFloat(data.tempFront);
             const tempBack = parseFloat(data.tempBack);
             
@@ -398,15 +415,14 @@
                 statusText = '✅ عادی';
             }
             
-            // تعیین متن نمایش داده شده
-            const displayTempFront = isActive && data.tempFront !== '--' ? `${data.tempFront} °C` : '--';
-            const displayTempBack = isActive && data.tempBack !== '--' ? `${data.tempBack} °C` : '--';
+            // استفاده از تابع formatTemp برای نمایش
+            const displayTempFront = formatTemp(data.tempFront);
+            const displayTempBack = formatTemp(data.tempBack);
             const displayIceStatus = isActive ? data.iceStatus : '--';
             const displayTime = isActive ? data.time : '--:--';
 
-            // نمایش دمای سطل آب فقط در صورت وجود
-            const waterTempFront = data.waterTempFront && data.waterTempFront !== '--' ? `${data.waterTempFront} °C` : '--';
-            const waterTempBack = data.waterTempBack && data.waterTempBack !== '--' ? `${data.waterTempBack} °C` : '--';
+            const waterTempFront = formatTemp(data.waterTempFront);
+            const waterTempBack = formatTemp(data.waterTempBack);
             
             // نمایش توضیحات فقط در صورت وجود
             const notesContent = data.notes ? `<p class="text-xs text-gray-600 border-t pt-2 mt-2">${data.notes}</p>` : '';
@@ -528,13 +544,20 @@
                         break;
                     }
                     
-                    // تنظیم دما با دو رقم اعشار
-                    data.tempFront = parseFloat(frontTempInput.value).toFixed(2); 
-                    data.tempBack = parseFloat(backTempInput.value).toFixed(2);
-
-                    // تنظیم دمای آب با دو رقم اعشار (اگر وارد شده باشد)
-                    if (data.waterTempFront !== '--') data.waterTempFront = parseFloat(data.waterTempFront).toFixed(2);
-                    if (data.waterTempBack !== '--') data.waterTempBack = parseFloat(data.waterTempBack).toFixed(2);
+                    // --- تغییر: منطق جدید برای ذخیره مقدار خام (متن یا عدد) ---
+                    // حذف toFixed(2) و ذخیره مستقیم مقدار ورودی
+                    
+                    data.tempFront = frontTempInput.value;
+                    data.tempBack = backTempInput.value;
+                    
+                    if (data.waterTempFront !== '--') {
+                        data.waterTempFront = data.waterTempFront; // مقدار از قبل تنظیم شده
+                    }
+                    
+                    if (data.waterTempBack !== '--') {
+                        data.waterTempBack = data.waterTempBack; // مقدار از قبل تنظیم شده
+                    }
+                    // --- پایان تغییر ---
                     
                     activeCount++;
 
@@ -615,9 +638,14 @@
         
         // تابع کمکی برای نمایش پیغام به جای alert در محیط iframe
         function alert(message) {
+            // بررسی می‌کنیم که آیا از قبل پیامی وجود دارد یا نه
+            if (document.getElementById('customAlert')) {
+                return; // اگر پیامی در حال نمایش است، پیام جدید را نشان نده
+            }
+            
             const msgBox = document.createElement('div');
             msgBox.innerHTML = `
-                <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
                     <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform transition-all scale-100 text-center">
                         <h4 class="text-xl font-bold text-[#4CAF50] mb-3">پیام سیستم</h4>
                         <p class="text-gray-700 mb-5">${message}</p>
@@ -633,4 +661,5 @@
 
 </body>
 </html>
+
 
